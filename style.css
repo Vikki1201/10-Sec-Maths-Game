@@ -1,0 +1,26 @@
+body {
+    background-color: #e0e4e7;
+}
+.container {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 50%;
+    border: 2px solid #938d8d;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    background-color: #fff;
+}
+
+#timer {
+    color: #ff0000;
+}
+
+@media (max-width: 720px) {
+    .container {
+        width: 80%;
+    }
+}
