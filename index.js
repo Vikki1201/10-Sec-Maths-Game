@@ -7,29 +7,15 @@ $(document).ready(function() {
     var score = 0;
     var highScore = 0;
 
-    $('#userAnswer').on('keyup', function() {
-        startGame();
-        checkAnswer(Number($(this).val()), currentQuestion.answer);
-    });
-
-    var randomNumberGenerator = function (size) {
-        return Math.ceil(Math.random() * size);
-    }
-
-    var questionGenerator = function() {
-        var question = {};
-        var num1 = randomNumberGenerator(10);
-        var num2 = randomNumberGenerator(10);
-
-        question.answer = num1 + num2;
-        question.equation = String(num1) + "+" + String(num2);
-
-        return question;
-    }
-
     var updateTimeLeft = function (count) {
         timer += count;
         $('#timer').text(timer);
+    }
+
+    var updateScore = function (count) {
+        score += count;
+        $('#score').text(score);
+        console.log('Score updated to:' + score);
     }
 
     var updateHighScore = function() {
@@ -41,31 +27,7 @@ $(document).ready(function() {
         console.log("High Score updated to: " + highScore);
     }
 
-    var updateScore = function (count) {
-        score += count;
-        $('#score').text(score);
-        console.log('Score updated to:' + score);
-    }
     updateHighScore();
-
-    var renderNewQuestion = function() {
-        currentQuestion = questionGenerator();
-        $('#equation').text(currentQuestion.equation);
-    }
-
-    var checkAnswer = function(userAnswer, answer) {
-        if (userAnswer === answer) {
-            renderNewQuestion();
-            $('#userAnswer').val('');
-            updateTimeLeft(+1);
-            updateScore(+1);
-        }
-    }
-
-    var endGame = function() {
-        console.log("Game Over");
-        alert("Game Over! Your Score: " + score + "!");
-    }
 
     var startGame = function() {
         if (!interval) {
@@ -85,6 +47,80 @@ $(document).ready(function() {
         }
     }
 
-    renderNewQuestion();
+    var renderNewQuestion = function(questionType) {
+        currentQuestion = questionGenerator(questionType);
+        $('#equation').text(currentQuestion.equation);
+    }
+
+    var randomNumberGenerator = function (size) {
+        return Math.ceil(Math.random() * size);
+    }
+
+    $('input[type=radio][name=questionType]').change(function() {
+        renderNewQuestion($(this).val());
+        $('#userAnswer').val('');
+        updateTimeLeft(0);
+        updateScore(-score);
+    });
+
+    var questionGenerator = function(questionType) {
+        var question = {};
+        var num1 = randomNumberGenerator(10);
+        var num2 = randomNumberGenerator(10);
+
+        switch (questionType) {
+            case 'addition':
+                question.answer = num1 + num2;
+                question.equation = String(num1) + " + " + String(num2);
+                break;
+            case 'subtraction':
+                // Ensure that the result is positive
+                if (num1 < num2) {
+                    var temp = num1;
+                    num1 = num2;
+                    num2 = temp;
+                }
+                question.answer = num1 - num2;
+                question.equation = String(num1) + " - " + String(num2);
+                break;
+            case 'multiplication':
+                question.answer = num1 * num2;
+                question.equation = String(num1) + " * " + String(num2);
+                break;
+            case 'division':
+                // Ensure that the division is valid and the result is a whole number
+                if (num1 % num2 !== 0) {
+                    num1 = num2 * Math.floor(Math.random() * (num1 / num2));
+                }
+                question.answer = num1 / num2;
+                question.equation = String(num1) + " / " + String(num2);
+                break;
+        }
+
+        return question;
+    }
+
+    var checkAnswer = function(userAnswer, answer) {
+        if (userAnswer === answer) {
+            renderNewQuestion($('input[type=radio][name=questionType]:checked').val());
+            $('#userAnswer').val('');
+            updateTimeLeft(+1);
+            updateScore(+1);
+        }
+    }
+
+    $('#userAnswer').on('keyup', function() {
+        var questionType = $('input[type=radio][name=questionType]:checked').val();
+        startGame();
+        checkAnswer(Number($(this).val()), currentQuestion.answer);
+        
+    });
+
+    var endGame = function() {
+        console.log("Game Over");
+        alert("Game Over! Your Score: " + score + "!");
+    }
+
+    renderNewQuestion('addition');
 })
 
