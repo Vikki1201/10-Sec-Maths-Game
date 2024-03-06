@@ -12,8 +12,8 @@ $(document).ready(function() {
         $('#timer').text(timer);
     }
 
-    var updateScore = function (count) {
-        score += count;
+    var updateScore = function (newScore) {
+        score = newScore;
         $('#score').text(score);
         console.log('Score updated to:' + score);
     }
@@ -56,11 +56,18 @@ $(document).ready(function() {
         return Math.ceil(Math.random() * size);
     }
 
-    $('input[type=radio][name=questionType]').change(function() {
-        renderNewQuestion($(this).val());
-        $('#userAnswer').val('');
+    var resetGame = function() {
+        clearInterval(interval);
+        interval = undefined;
+        timer = 10;
+        score = 0;
         updateTimeLeft(0);
-        updateScore(-score);
+        updateHighScore(0);
+        renderNewQuestion($('input[type=radio][name=questionType]:checked').val());
+    }
+
+    $('input[type=radio][name=questionType]').change(function() {
+        resetGame();
     });
 
     var questionGenerator = function(questionType) {
@@ -105,7 +112,7 @@ $(document).ready(function() {
             renderNewQuestion($('input[type=radio][name=questionType]:checked').val());
             $('#userAnswer').val('');
             updateTimeLeft(+1);
-            updateScore(+1);
+            updateScore(score + 1);
         }
     }
 
