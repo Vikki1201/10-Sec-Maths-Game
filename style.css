@@ -19,8 +19,12 @@ body {
     color: #ff0000;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 970px) {
     .container {
         width: 80%;
+    }
+
+    .input-form {
+        flex-direction: column;
     }
 }
